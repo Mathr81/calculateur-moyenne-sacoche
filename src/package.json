@@ -1,0 +1,22 @@
+{
+  "name": "calculateur-moyenne-sacoche",
+  "version": "1.0.0",
+  "description": "Un calculateur de moyenne fait pour sacoche ( sésamath ) en utilisant l'api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mathr81/calculateur-moyenne-sacoche.git"
+  },
+  "author": "Mathr81",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Mathr81/calculateur-moyenne-sacoche/issues"
+  },
+  "homepage": "https://github.com/Mathr81/calculateur-moyenne-sacoche#readme",
+  "dependencies": {
+    "axios": "^1.6.8"
+  }
+}
