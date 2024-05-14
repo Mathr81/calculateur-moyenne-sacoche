@@ -1,18 +1,19 @@
-const login = require('./functions/login');
-const { listEvaluations, viewEvaluation } = require('./functions/evaluation');
+const login = require("./functions/login");
+const { listEvaluations, viewEvaluation } = require("./functions/evaluation");
 
 let total = 0;
 let count = 0;
 
-const jeton = "7463iG3A3kkLEggxHd7pyhK6uaw6lm9VP0Z8cQT0c5bMYqlaXWFhj1Lr2BJQDK59UYv24";
+const jeton =
+  "7463iazxUqo50bOFrKLF9w1TW59sdvtkJ78j87PAGhxSUKJqjVd2O1z3mgPXHVnflS6Cy";
 
-const equivalents = [5,10,15,20]
+const equivalents = [5, 10, 15, 20];
 function ajouterNote(note) {
-    total += note;
-    count++;
-    const moyenne = total / count;
-    console.log(`Nouvelle note : ${note}`);
-    console.log(`Moyenne actuelle : ${moyenne}`);
+  total += note;
+  count++;
+  const moyenne = total / count;
+  console.log(`Nouvelle note : ${note}`);
+  console.log(`Moyenne actuelle : ${moyenne}`);
 }
 
 async function askAPI(service, jeton, devoir_id, date_debut, date_fin) {
@@ -35,30 +36,51 @@ async function askAPI(service, jeton, devoir_id, date_debut, date_fin) {
   }
 }
 
-async function calculerMoyenne() {
-    console.log("Calcul de la moyenne...");
-  
-    try {
-      await askAPI("login", jeton);
-      const evaluations = await askAPI("lister_evaluations", jeton, "01/02/2024", "10/03/2024");
-  
-      for (const evaluation of evaluations.data) {
-        const saisies = await askAPI("voir_saisies_evaluation", jeton, evaluation.id);
+async function calculerMoyenne(startDate, endDate) {
+  console.log("Calcul de la moyenne...");
 
-        for (const saisie of Object.values(saisies.data.item)) {
-            if (!saisie.note) {
-                console.log(`Note manquante pour l'évaluation ${evaluation.id}`);
-                continue;
-            }
-            const note = parseInt(saisie.note);
-            const equivalentNote = equivalents[note - 1];
-            console.log(`Equivalent de la note ${note} : ${equivalentNote}`);
-            ajouterNote(equivalentNote);
-          }
+  try {
+    await askAPI("login", jeton);
+    const evaluations = await askAPI(
+      "lister_evaluations",
+      jeton,
+      startDate,
+      endDate,
+    );
+
+    for (const evaluation of evaluations.data) {
+      const saisies = await askAPI(
+        "voir_saisies_evaluation",
+        jeton,
+        evaluation.id,
+      );
+
+      for (const saisie of Object.values(saisies.data.item)) {
+        if (!saisie.note) {
+          console.log(`Note manquante pour l'évaluation ${evaluation.id}`);
+          continue;
+        }
+        const note = parseInt(saisie.note);
+        if (!note) {
+          console.log(`Note invalide pour l'évaluation ${evaluation.id}`);
+          continue;
+        }
+        const equivalentNote = equivalents[note - 1];
+        console.log(`Equivalent de la note ${note} : ${equivalentNote}`);
+        ajouterNote(equivalentNote);
       }
-    } catch (error) {
-      console.error(error);
     }
+  } catch (error) {
+    console.error(error);
   }
+}
 
-calculerMoyenne()
+let idx = 1;
+const year = "2024";
+for (let i = 0; i < 5; i++) {
+  if (idx < 10) {
+    calculerMoyenne(`01/0${idx}/${year}`, `01/0${idx + 1}/${year}`);
+  } else {
+    calculerMoyenne(`01/${idx}/${year}`, `01/${idx + 1}/${year}`);
+  }
+}
